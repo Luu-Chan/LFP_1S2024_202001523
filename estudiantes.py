@@ -6,10 +6,10 @@ class Estudiante:
         self.notas = []
 
     def agregarNota(self, nota):
-        self.notas.append(nota)
+        self.notas.extend(nota)
 
     def calcularPromedio(self):
         suma = 0
         for nota in self.notas:
-            suma += nota
-        return suma / len(self.notas)
+            suma += int(nota)
+        return int((suma / len(self.notas))*100)/100

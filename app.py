@@ -30,12 +30,12 @@ def cargarCali():
     global estudiantes
     for linea in archivo:
         #Leer el archivo y omitir caracteres especificos
-        carne, nota = linea.strip().split(':')
+        carne, notas = linea.strip().split(':')
         # Eliminar las coma de las notas
-        nota = nota.strip(",")
+        nota = notas.split(",")
         #Verifica si la ubicacion ya existe
         if carne in estudiantes:
-            estudiantes[carne].agregarNota(str(nota))
+            estudiantes[carne].agregarNota(nota)
         else:
             print("El estudiante no existe")
     archivo.close()
@@ -57,19 +57,98 @@ def informeInventario():
         informe.write("<tr>")
         informe.write("<th>Carne</th>")
         informe.write("<th>Nombre</th>")
+        informe.write("<th>Notas</th>")
         informe.write("</tr>")
         #Escribir los datos
-        for estudiantes in estudiantes.items():
+        for estudiante in estudiantes.values():
             informe.write("<tr>")
-            informe.write(f"<td>{estudiantes[0]}</td>")
-            informe.write(f"<td>{estudiantes[1].nombre}</td>")
+            informe.write(f"<td>{estudiante.carnet}</td>")
+            informe.write(f"<td>{estudiante.nombre}</td>")
+            informe.write(f"<td>{', '.join(estudiante.notas)}</td>")
             informe.write("</tr>")
         #Escribir el pie
-        informe.write("</table>")
+        informe.write("</table>") 
         informe.write("</body>")
         informe.write("</html>")
         #Cerrar el informe
     informe.close()
+
+def reporteAprobacion():
+    global estudiantes
+    #Crear el archivo
+    with open("reporte.html", "w", encoding="utf-8") as reporte:
+    #Escribir el encabezado
+        reporte.write("<html>")
+        reporte.write("<head>")
+        reporte.write("<title>Reporte de Aprobacion</title>")
+        reporte.write("</head>")
+        reporte.write("<body>")
+        reporte.write("<h1>Reporte de Aprobacion</h1>")
+        reporte.write("<table>")
+        reporte.write("<tr>")
+        reporte.write("<th>Carne</th>")
+        reporte.write("<th>Nombre</th>")
+        reporte.write("<th>Promedio</th>")
+        reporte.write("<th>Estado</th>")
+        reporte.write("</tr>")
+        #Escribir los datos
+        for estudiante in estudiantes.values():
+            promedio = estudiante.calcularPromedio()
+            estado = "Aprobado" if promedio >= 61 else "Reprobado"
+            stilo = "style = 'color: green'" if promedio >= 61 else "style = 'color: red'"
+            reporte.write(f"<tr {stilo}>")
+            reporte.write(f"<td>{estudiante.carnet}</td>")
+            reporte.write(f"<td>{estudiante.nombre}</td>")
+            reporte.write(f"<td>{promedio}</td>")
+            reporte.write(f"<td>{estado}</td>")
+            reporte.write("</tr>")
+        #Escribir el pie
+        reporte.write("</table>") 
+        reporte.write("</body>")
+        reporte.write("</html>")
+        #Cerrar el informe
+    reporte.close()
+
+def bubbleSort(estudiantes):
+    n = len(estudiantes)
+    for i in range(n-1):
+        for j in range(0, n-i-1):
+            if estudiantes[j].calcularPromedio() < estudiantes[j+1].calcularPromedio():
+                estudiantes[j], estudiantes[j+1] = estudiantes[j+1], estudiantes[j]
+    return estudiantes[:3]
+
+
+def top3Estudiantes():
+    global estudiantes
+    #Crear el archivo
+    with open("top3.html", "w", encoding="utf-8") as top3:
+    #Escribir el encabezado
+        top3.write("<html>")
+        top3.write("<head>")
+        top3.write("<title>Top 3 Estudiantes</title>")
+        top3.write("</head>")
+        top3.write("<body>")
+        top3.write("<h1>Top 3 Estudiantes</h1>")
+        top3.write("<table>")
+        top3.write("<tr>")
+        top3.write("<th>Carne</th>")
+        top3.write("<th>Nombre</th>")
+        top3.write("<th>Promedio</th>")
+        top3.write("</tr>")
+        #Escribir los datos
+        for estudiante in bubbleSort(list(estudiantes.values())):
+            promedio = estudiante.calcularPromedio()
+            top3.write(f"<tr>")
+            top3.write(f"<td>{estudiante.carnet}</td>")
+            top3.write(f"<td>{estudiante.nombre}</td>")
+            top3.write(f"<td>{promedio}</td>")
+            top3.write("</tr>")
+        #Escribir el pie
+        top3.write("</table>") 
+        top3.write("</body>")
+        top3.write("</html>")
+        #Cerrar el informe
+    top3.close()
 
 def mostrar_menu():
     print("1. Cargar Estudiantes")
@@ -98,11 +177,11 @@ while True:
         print("Revise el archivo .html" + "\n")
     elif opcion == "4":
         print("Creando informe, espere...." + "\n")
-        #reporteAprobacion()
+        reporteAprobacion()
         print("Revise el archivo .html" + "\n")
     elif opcion == "5":
         print("Creando informe, espere...." + "\n")
-        #top3Estudiantes()
+        top3Estudiantes()
         print("Revise el archivo .html" + "\n")
     elif opcion == "6":
         print("Saliendo..." + "\n")

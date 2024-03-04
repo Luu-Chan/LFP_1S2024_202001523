@@ -22,8 +22,6 @@ def cargarEstudiantes():
     archivo.close()
     print("========Archivo Cargado exitosamente!!========== \n")
 
-
-
 def cargarCali():    
     ruta =askopenfilename()
     archivo= open(ruta,"r")
@@ -37,10 +35,9 @@ def cargarCali():
         if carne in estudiantes:
             estudiantes[carne].agregarNota(nota)
         else:
-            print("El estudiante no existe")
+            print("El estudiante no existe: " + f"{carne}" + "\n")
     archivo.close()
     print("========Archivo Cargado exitosamente!!========== \n")
-
 
 def informeInventario():
     global estudiantes
@@ -116,7 +113,6 @@ def bubbleSort(estudiantes):
             if estudiantes[j].calcularPromedio() < estudiantes[j+1].calcularPromedio():
                 estudiantes[j], estudiantes[j+1] = estudiantes[j+1], estudiantes[j]
     return estudiantes[:3]
-
 
 def top3Estudiantes():
     global estudiantes

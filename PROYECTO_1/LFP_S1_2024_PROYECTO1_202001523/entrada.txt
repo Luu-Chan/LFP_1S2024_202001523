@@ -1,34 +1,38 @@
-Iniscio:{
+Inicio:{
 Encabezado:{
-    TituloPagina:"Ejemplo titulo";
+    TituloPagina:"Ejemplo titulo";2
             },
     Cuerpo:[
-        Titulo:{f
+        Titulo:{
         texto:"Este es un titulo"; posicion:"izquierda"; tamaño:"t1";
         color:"rojo";
-                },
+                },2
         Fondo:{
             color:"cyan";
                 },
         Parrafo:{
             texto:"Este es un parrafo de ejemplo."; posicion:"izquierda";
-                },s
+                },
         Texto:{
             fuente="Arial"; color="azul"; tamaño="11";
                 },
         Codigo:{
             texto:"Muestra el texto con fuente de codigo de ordenador."; posicion:"centro";
-            },
+            },2
+        Titulo:{
+        	texto:"Este es un titulo 2"; posicion:"izquierda"; tamaño:"t1";
+        	color:"rojo";
+                },
         Negrita:{
-            texto:"Este texto aparecerá en negrita.";3
+            texto:"Este texto aparecerá en negrita.";
             },
-        Subrayfado:{f
+        Subrayfado:{
             texto:"Este texto aparecerá Subrayado.";
                     },
         Tachado:{
             texto:"Este texto aparecerá tachado.";
                 },
-        Cursiva:{
+       2 Cursiva:{
             texto:"Este texto aparecerá en cursiva.";
             },
         Salto:{
@@ -37,3 +41,4 @@ Encabezado:{
 
     ]
 }
+

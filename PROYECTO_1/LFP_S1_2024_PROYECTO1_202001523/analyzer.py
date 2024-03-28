@@ -1,6 +1,8 @@
 from token_1 import Token
 from error import Error
 
+TOKENS = []
+
 class Analyzer():
     def __init__(self, text):
         self.text = text
@@ -75,7 +77,7 @@ class Analyzer():
                     lexema += char
                     state = 2
                 else: #Es un estado de aceptación, se guarda el token
-                    #Se verifica si es una palabra reservada
+                    #Se verifica si es una palabra reservada valida
                     for palabraReservada in self.palabrasReservada:
                         if lexema == palabraReservada:
                             self.tokens.append(Token("Palabra Reservada", lexema, line, column - len(lexema)))
@@ -134,3 +136,36 @@ class Analyzer():
 
             else:
                 column += 1
+
+    def generarTokens(self):
+        for token in self.tokens:
+            if token.name == "Palabra Reservada" or token.name == "String":
+                TOKENS.append(token)
+
+    def getTokens(self):
+        
+        with open("tokens.html", "w") as file:
+            file.write("<!DOCTYPE html>\n")
+            file.write("<html>\n")
+            file.write("<head>\n")
+            file.write("<title>Tokens</title>\n")
+            file.write("</head>\n")
+            file.write("<body>\n")
+            file.write("<table border='1'>\n")
+            file.write("<tr>\n")
+            file.write("<th>Token</th>\n")
+            file.write("<th>Lexema</th>\n")
+            file.write("<th>Fila</th>\n")
+            file.write("<th>Columna</th>\n")
+            file.write("</tr>\n")
+            for token in self.tokens:
+                file.write("<tr>\n")
+                file.write(f"<td>{token.name}</td>\n")
+                file.write(f"<td>{token.value}</td>\n")
+                file.write(f"<td>{token.line}</td>\n")
+                file.write(f"<td>{token.column}</td>\n")
+                file.write("</tr>\n")
+            file.write("</table>\n")
+            file.write("</body>\n")
+            file.write("</html>\n")
+            file.close()

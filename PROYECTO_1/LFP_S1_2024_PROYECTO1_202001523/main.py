@@ -1,9 +1,17 @@
 from analyzer import Analyzer
 import tkinter as tk
 from tkinter import filedialog
+from generador import leer_documento, crear_html
+
+analyzer = None
+tex = None
+filepath = None
 
 
 def load_file():
+    global analyzer
+    global text
+    global filepath
     file_path = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt")])
     if file_path:
         with open(file_path, "r", encoding="utf-8") as file:
@@ -19,6 +27,12 @@ def load_file():
             textbox.delete("1.0", tk.END)
             textbox.insert(tk.END, text)
 
+def traducir():
+    analyzer.getTokens()
+    """leer_documento(text)
+    crear_html("html.html")"""
+    
+
 
 root = tk.Tk()
 root.title("Traducto HTML")
@@ -33,10 +47,11 @@ root.config(relief="groove")
 textbox = tk.Text(root, height=10, width=50)
 textbox.pack()
 
-
+button2 = tk.Button(root, text="Traducir", command=traducir)
 
 button = tk.Button(root, text="Cargar archivo", command=load_file)
 button.pack()
+button2.pack()
 
 root.mainloop()
 

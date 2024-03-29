@@ -2,6 +2,7 @@ from analyzer import Analyzer
 import tkinter as tk
 from tkinter import filedialog
 from generador import leer_documento, crear_html
+import webbrowser
 
 analyzer = None
 tex = None
@@ -29,9 +30,18 @@ def load_file():
 
 def traducir():
     analyzer.getTokens()
-    """leer_documento(text)
-    crear_html("html.html")"""
-    
+    leer_documento(text)
+    crear_html("html.html")
+    generarTexto()
+    abrir_archivos()
+    analyzer.generate_dot_code()
+
+
+
+
+def abrir_archivos():
+    webbrowser.open_new_tab("html.html")
+    webbrowser.open_new_tab("tokens.html")
 
 
 root = tk.Tk()
@@ -44,6 +54,16 @@ root.config(bd="30")
 root.config(relief="groove")
 
 
+def generarTexto():
+    with open("html.html", "r", encoding="utf-8") as html_file:
+        html_text = html_file.read()
+        html_textbox.insert(tk.END, html_text)
+
+
+html_textbox = tk.Text(root, height=10, width=50)
+
+
+html_textbox.pack()
 textbox = tk.Text(root, height=10, width=50)
 textbox.pack()
 

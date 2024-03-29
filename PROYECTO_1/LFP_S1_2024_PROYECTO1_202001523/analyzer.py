@@ -1,5 +1,6 @@
 from token_1 import Token
 from error import Error
+import os
 
 TOKENS = []
 
@@ -143,7 +144,6 @@ class Analyzer():
                 TOKENS.append(token)
 
     def getTokens(self):
-        
         with open("tokens.html", "w") as file:
             file.write("<!DOCTYPE html>\n")
             file.write("<html>\n")
@@ -151,6 +151,7 @@ class Analyzer():
             file.write("<title>Tokens</title>\n")
             file.write("</head>\n")
             file.write("<body>\n")
+            file.write("<h1><p align='center' style='color: red;'> Tokens y Errores</p></h1>")
             file.write("<table border='1'>\n")
             file.write("<tr>\n")
             file.write("<th>Token</th>\n")
@@ -165,7 +166,38 @@ class Analyzer():
                 file.write(f"<td>{token.line}</td>\n")
                 file.write(f"<td>{token.column}</td>\n")
                 file.write("</tr>\n")
-            file.write("</table>\n")
+            #file.write("table border='2'>\n")
+            file.write("<tr>\n")
+            file.write("<th>Caracter Invalido</th>\n")
+            file.write("<th>Linea</th>\n")
+            file.write("<th>Colunma</th>\n")
+            file.write("</tr>\n")
+            for error in self.errors:
+                if error.errorChar != ';' or error.lexema != '=':
+                    file.write("<tr>\n")
+                    file.write(f"<td>{error.errorChar}</td>\n")
+                    file.write(f"<td>{error.line}</td>\n")
+                    file.write(f"<td>{error.column}</td>\n")
+                    file.write("</tr>\n")
             file.write("</body>\n")
             file.write("</html>\n")
             file.close()
+
+    def generate_dot_code(self):
+        dot_code = "digraph G {\n"
+        
+        # Add nodes for tokens
+        for token in self.tokens:
+            dot_code += f'    {token.name}_{token.line}_{token.column} [label="{token.name}: {token.value}"];\n'
+        
+        # Add edges between tokens
+        for i in range(len(self.tokens) - 1):
+            dot_code += f'    {self.tokens[i].name}_{self.tokens[i].line}_{self.tokens[i].column} -> {self.tokens[i+1].name}_{self.tokens[i+1].line}_{self.tokens[i+1].column};\n'
+        
+        dot_code += "}"
+                    
+        with open("code_graph.dot", "w") as file:
+            file.write(dot_code)
+            file.close()
+        os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin'
+        os.system(f"dot -Tpng code_graph.dot -o Automata.png")

@@ -1,6 +1,8 @@
 from token_1 import Token
 from error import Error
 import os
+import os
+import subprocess
 
 TOKENS = []
 
@@ -184,7 +186,7 @@ class Analyzer():
             file.close()
 
     def generate_dot_code(self):
-        dot_code = "digraph G {\n"
+        """dot_code = "digraph G {\n"
         
         # Add nodes for tokens
         for token in self.tokens:
@@ -198,6 +200,10 @@ class Analyzer():
                     
         with open("code_graph.dot", "w") as file:
             file.write(dot_code)
-            file.close()
+            file.close()"""
+        
+        # Add the path to Graphviz bin directory to the PATH environment variable
         os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin'
-        os.system(f"dot -Tpng code_graph.dot -o Automata.png")
+        
+        # Use subprocess to execute the dot command
+        subprocess.run(["dot", "-Tpng", "code_graph.dot", "-o", "Automata.png"])

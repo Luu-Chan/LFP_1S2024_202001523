@@ -5,7 +5,7 @@ Encabezado:{
     Cuerpo:[
         Titulo:{
         texto:"Este es un titulo"; posicion:"izquierda"; tamaño:"t1";
-        color:"rojo";
+        color:"azul";
                 },2
         Fondo:{
             color:"cyan";

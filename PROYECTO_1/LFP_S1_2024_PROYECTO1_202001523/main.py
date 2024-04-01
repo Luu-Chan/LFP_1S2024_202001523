@@ -1,13 +1,12 @@
 from analyzer import Analyzer
 import tkinter as tk
 from tkinter import filedialog
-from generador import leer_documento, crear_html
+from generador import leer_documento, crear_html, formatear
 import webbrowser
 
 analyzer = None
 tex = None
 filepath = None
-
 
 def load_file():
     global analyzer
@@ -34,21 +33,29 @@ def traducir():
     crear_html("html.html")
     generarTexto()
     abrir_archivos()
-    analyzer.generate_dot_code()
-
-
 
 
 def abrir_archivos():
     webbrowser.open_new_tab("html.html")
     webbrowser.open_new_tab("tokens.html")
 
+def reiniciar():
+    global analyzer
+    global text
+    global filepath
+    analyzer = None
+    text = None
+    filepath = None
+    formatear()
+    textbox.delete("1.0", tk.END)
+    html_textbox.delete("1.0", tk.END)
+    
 
 root = tk.Tk()
-root.title("Traducto HTML")
+root.title("Traductor HTML")
 root.resizable(False,False)
 root.config(cursor="hand2")
-root.geometry("1200x600")
+root.geometry("1200x720")
 root.config(bg="SlateBlue1")
 root.config(bd="30")
 root.config(relief="groove")
@@ -60,18 +67,27 @@ def generarTexto():
         html_textbox.insert(tk.END, html_text)
 
 
-html_textbox = tk.Text(root, height=10, width=50)
+html_textbox = tk.Text(root, height=30, width=50)
+html_textbox.pack(side=tk.RIGHT)
+
+textbox = tk.Text(root, height=30, width=50)
+textbox.pack(side=tk.LEFT)
 
 
-html_textbox.pack()
-textbox = tk.Text(root, height=10, width=50)
-textbox.pack()
 
-button2 = tk.Button(root, text="Traducir", command=traducir)
+button2 = tk.Button(root, text="Traducir", command=traducir,font=("Arial", 15))
 
-button = tk.Button(root, text="Cargar archivo", command=load_file)
+button3 = tk.Button(root, text="Salir", command=root.quit, font=("Arial", 15))
+button3.pack(side=tk.BOTTOM)
+button4 = tk.Button(root, text="Reiniciar", command=reiniciar, font=("Arial", 15))
+
+button = tk.Button(root, text="Cargar archivo", command=load_file, font=("Arial", 15))
+
+button4.pack()
 button.pack()
 button2.pack()
-
+button3.pack()  
+textbox.pack()
+html_textbox.pack()
 root.mainloop()
 

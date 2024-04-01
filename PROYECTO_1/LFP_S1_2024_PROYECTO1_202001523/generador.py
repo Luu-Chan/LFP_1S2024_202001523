@@ -166,3 +166,8 @@ def crear_html(html_salida):
         archivo.write('</body>\n</html>\n')
 
     print(f"Se ha creado el archivo HTML '{html_salida}'")
+
+
+def formatear():
+    estructura.clear()
+    

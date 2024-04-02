@@ -11,8 +11,9 @@ class Analyzer():
         self.text = text
         self.tokens = []
         self.errors = []
-        self.palabrasReservada = ["Inicio" , "Titulo", "Encabezado", "Cuerpo", "Fondo", "Parrafo", "Texto","Codigo","Negrita",
-                                "Subrayado","Tachado","Cursiva","Salto", "texto", "fuente", "color", "tamaño", "posicion","cantidad", "Tabla", "filas", "colunmas", "elemento"]
+        self.palabrasReservada = ["Inicio" , "Titulo", "Encabezado", "Cuerpo", "Fondo", "Parrafo", "Texto","Codigo",
+                                "Negrita","Subrayado","Tachado","Cursiva","Salto", "texto", "fuente", "color", 
+                                "tamaño", "posicion","cantidad", "Tabla", "filas", "colunmas", "elemento"]
 
     def isValidSymbol(self, char):
         return char in [":", "{", "}", ";", ",", "[", "]", "="]
@@ -179,7 +180,7 @@ class Analyzer():
             file.close()
 
     def generate_dot_code(self):
-        """dot_code = "digraph G {\n"
+        dot_code = "digraph G {\n"
         
         # Add nodes for tokens
         for token in self.tokens:
@@ -193,7 +194,7 @@ class Analyzer():
                     
         with open("code_graph.dot", "w") as file:
             file.write(dot_code)
-            file.close()"""
+            file.close()
         
         # Add the path to Graphviz bin directory to the PATH environment variable
         os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin'

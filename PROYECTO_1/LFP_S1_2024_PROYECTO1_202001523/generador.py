@@ -1,5 +1,4 @@
 from analyzer import Analyzer
-from token_1 import Token 
 
 class ElementoHTML:
     def __init__(self, instruccion, atributo):
@@ -9,7 +8,6 @@ class ElementoHTML:
     def __str__(self):
         atributos_html = " ".join([f'{key}="{value}"' for key, value in self.atributos.items()])
         return f"<{self.instruccion} {atributos_html}>{self.atributos.get('texto', '')}</{self.instruccion}>"
-
 
 alineado_html = {"izquierda": "left", "derecha": "right", "centro": "center", "justificado": "justify"}
 
@@ -106,7 +104,6 @@ def procesar_bloque_salto(bloque):
     return ElementoHTML('br' * cantidad)
 
 
-
 estructura = []
 
 def leer_documento(ruta_archivo):
@@ -148,7 +145,6 @@ def leer_documento(ruta_archivo):
                 break
     return estructura
 
-
 def crear_html(html_salida):
     with open(html_salida, 'w', encoding='utf-8') as archivo:
         archivo.write('<!DOCTYPE html>\n<html>\n<head>\n')
@@ -164,7 +160,6 @@ def crear_html(html_salida):
         archivo.write('</body>\n</html>\n')
 
     print(f"Se ha creado el archivo HTML '{html_salida}'")
-
 
 def formatear():
     estructura.clear()

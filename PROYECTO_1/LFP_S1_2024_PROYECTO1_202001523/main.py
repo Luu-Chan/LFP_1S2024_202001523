@@ -12,7 +12,7 @@ def load_file():
     global analyzer
     global text
     global filepath
-    file_path = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt")])
+    file_path = filedialog.askopenfilename(filetypes=[("Archivo de Entrada", "")])
     if file_path:
         with open(file_path, "r", encoding="utf-8") as file:
             text = file.read()
@@ -26,6 +26,7 @@ def load_file():
                 print(error)
             textbox.delete("1.0", tk.END)
             textbox.insert(tk.END, text)
+            tk.messagebox.showinfo("Mensaje", "¡Se ha cargado el archivo de entrada!")
 
 def traducir():
     analyzer.getTokens()
@@ -33,7 +34,7 @@ def traducir():
     crear_html("html.html")
     generarTexto()
     abrir_archivos()
-
+    tk.messagebox.showinfo("Mensaje", "¡Se ha traducido el archivo!")
 
 def abrir_archivos():
     webbrowser.open_new_tab("html.html")
@@ -49,13 +50,16 @@ def reiniciar():
     formatear()
     textbox.delete("1.0", tk.END)
     html_textbox.delete("1.0", tk.END)
+    tk.messagebox.showinfo("Mensaje", "¡Se ha reiniciado el programa!") 
+
+
     
 
 def generarTexto():
     with open("html.html", "r", encoding="utf-8") as html_file:
         html_text = html_file.read()
         html_textbox.insert(tk.END, html_text)
-
+        
 
 root = tk.Tk()
 root.title("Traductor HTML")
@@ -66,19 +70,17 @@ root.config(bg="SlateBlue1")
 root.config(bd="30")
 root.config(relief="groove")
 
-
 html_textbox = tk.Text(root, height=30, width=60)
 html_textbox.pack(side=tk.RIGHT)
 
 textbox = tk.Text(root, height=30, width=60)
 textbox.pack(side=tk.LEFT)
 
-
-
 button2 = tk.Button(root, text="Traducir", command=traducir,font=("Arial", 15))
 
 button3 = tk.Button(root, text="Salir", command=root.quit, font=("Arial", 15))
 button3.pack(side=tk.BOTTOM)
+
 button4 = tk.Button(root, text="Reiniciar", command=reiniciar, font=("Arial", 15))
 
 button = tk.Button(root, text="Cargar archivo", command=load_file, font=("Arial", 15))

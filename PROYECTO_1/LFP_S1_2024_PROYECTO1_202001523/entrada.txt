@@ -5,7 +5,7 @@ Encabezado:{@
     Cuerpo:[
         Titulo:{
         texto:"Este es un titulo"; posicion:"izquierda"; tamaño:"t1";
-        color:"azul";
+        color:"#FF0099";
                 },2
         Fondo:{
             color:"cyan";
@@ -14,7 +14,7 @@ Encabezado:{@
             texto:"Este es un parrafo de ejemplo."; posicion:"izquierda";
                 },
         Texto:{
-            fuente="Arial"; color="azul"; tamaño="11";
+            fuente="Arial"; color="#FF0099"; tamaño="11"; texto="texto con formato";
                 },
         Codigo:{
             texto:"Muestra el texto con fuente de codigo de ordenador.";@ posicion:"centro";
@@ -26,15 +26,21 @@ Encabezado:{@
         Negrita:{
             texto:"Este texto aparecerá en negrita.";
             },
-        Subrayfado:{
+        Subrayado:{
             texto:"Este texto aparecerá Subrayado.";
                     },
         Tachado:{
             texto:"Este texto aparecerá tachado.";
                 },
-       2 Cursiva:{
+        Cursiva:{
             texto:"Este texto aparecerá en cursiva.";
             },
+        Tabla:{
+            filas:"4";
+            columnas:"3";
+            elemento:{"fila":"1","columna":"1","Texto mostrado en fila 1 columna 1"};
+            elemento:{"fila":"1","columna":"2","Texto mostrado en fila 1 columna 2"};
+        },
         Salto:{
             cantidad:"5";   
                 }@

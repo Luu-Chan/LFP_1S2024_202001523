@@ -12,7 +12,7 @@ class Analyzer():
         self.tokens = []
         self.errors = []
         self.palabrasReservada = ["Inicio" , "Titulo", "Encabezado", "Cuerpo", "Fondo", "Parrafo", "Texto","Codigo","Negrita",
-                                "Subrayado","Tachado","Cursiva","Salto", "texto", "fuente", "color", "tamaño", "posicion","cantidad"]
+                                "Subrayado","Tachado","Cursiva","Salto", "texto", "fuente", "color", "tamaño", "posicion","cantidad", "Tabla", "filas", "colunmas", "elemento"]
 
     def isValidSymbol(self, char):
         return char in [":", "{", "}", ";", ",", "[", "]", "="]
@@ -85,11 +85,9 @@ class Analyzer():
                         if lexema == palabraReservada:
                             self.tokens.append(Token("Palabra Reservada", lexema, line, column - len(lexema)))
                             
-                        
                             #Se reinicia el lexema
                             lexema = ""
                             state = 0
-
                         #Actúa como si estuviera en el estado 0 de nuevo
                             state = self.state0(char, line, column, lexema)
                             if state == 0:
@@ -122,9 +120,7 @@ class Analyzer():
                     lexema += char
                     previousState = 0
 
-
-            # Control de líneas y columnas
-            
+            # Control de líneas y columnas    
             #Salto de línea
             if ord(char) == 10:
                 line += 1
@@ -132,11 +128,9 @@ class Analyzer():
             #Tabulación
             elif ord(char) == 9:
                 column += 4
-
             #Espacio
             elif ord(char) == 32:
                 column += 1
-
             else:
                 column += 1
 
@@ -168,14 +162,13 @@ class Analyzer():
                 file.write(f"<td>{token.line}</td>\n")
                 file.write(f"<td>{token.column}</td>\n")
                 file.write("</tr>\n")
-            #file.write("table border='2'>\n")
             file.write("<tr>\n")
             file.write("<th>Caracter Invalido</th>\n")
             file.write("<th>Linea</th>\n")
             file.write("<th>Colunma</th>\n")
             file.write("</tr>\n")
             for error in self.errors:
-                if error.errorChar != ';' or error.lexema != '=':
+                if error.errorChar != ';' or error.lexema != '=' or error.lexema != ':':
                     file.write("<tr>\n")
                     file.write(f"<td>{error.errorChar}</td>\n")
                     file.write(f"<td>{error.line}</td>\n")

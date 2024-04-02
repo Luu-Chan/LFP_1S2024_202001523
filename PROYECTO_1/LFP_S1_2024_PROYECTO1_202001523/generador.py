@@ -1,12 +1,21 @@
+from analyzer import Analyzer
+from token_1 import Token 
+
 class ElementoHTML:
-    def __init__(self, instruccion, **kwargs):
+    def __init__(self, instruccion, atributo):
         self.instruccion = instruccion
-        self.atributos = kwargs
+        self.atributos = atributo
 
     def __str__(self):
         atributos_html = " ".join([f'{key}="{value}"' for key, value in self.atributos.items()])
         return f"<{self.instruccion} {atributos_html}>{self.atributos.get('texto', '')}</{self.instruccion}>"
 
+
+alineado_html = {"izquierda": "left", "derecha": "right", "centro": "center", "justificado": "justify"}
+
+tamaño_html = {"t1": "h1", "t2": "h2", "t3": "h3", "t4": "h4", "t5": "h5","t6": "h6",}
+
+colors_html = {"rojo": "red", "azul": "blue", "verde": "green"}
 
 def procesar_bloque_encabezado(bloque):
     titulo_pagina = bloque.split('TituloPagina')[1].split('"')[1]
@@ -97,15 +106,11 @@ def procesar_bloque_salto(bloque):
     return ElementoHTML('br' * cantidad)
 
 
-def procesar_bloque_elemento(bloque):
-    filas, columnas, elementos = [int(linea.split(':')[1]) for linea in bloque.split('\n') if linea]
-    return ElementoHTML('td', texto=f"|{filas} {columnas} {elementos}|")
 
 estructura = []
 
 def leer_documento(ruta_archivo):
     contenido = ruta_archivo
-
     bloques_procesados = {
         'Encabezado': procesar_bloque_encabezado,
         'Titulo': generar_titulo,
@@ -118,13 +123,15 @@ def leer_documento(ruta_archivo):
         'Tachado': procesar_bloque_tachado,
         'Cursiva': procesar_bloque_cursiva,
         'Salto': procesar_bloque_salto,
-        'elemento': procesar_bloque_elemento,
     }
 
-    
-
-    
     for palabra_clave, funcion_procesar in bloques_procesados.items():
+
+        if palabra_clave == 'Palabra clave':
+            Analyzer.getTokens()
+            for token in Analyzer.tokens:
+                if token.lexema == palabra_clave:
+                    indice_busquedas = 0
         indice_busqueda = 0
         while True:
             indice_palabra_clave = contenido.find(palabra_clave, indice_busqueda)
@@ -139,16 +146,7 @@ def leer_documento(ruta_archivo):
                     break
             else:
                 break
-
     return estructura
-
-
-alineado_html = {"izquierda": "left", "derecha": "right", "centro": "center", "justificado": "justify"}
-
-tamaño_html = {"t1": "h1", "t2": "h2", "t3": "h3", "t4": "h4", "t5": "h5","t6": "h6",}
-
-colors_html = {"rojo": "red", "azul": "blue", "verde": "green"}
-
 
 
 def crear_html(html_salida):

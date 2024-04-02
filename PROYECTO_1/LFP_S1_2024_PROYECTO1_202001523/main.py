@@ -51,6 +51,12 @@ def reiniciar():
     html_textbox.delete("1.0", tk.END)
     
 
+def generarTexto():
+    with open("html.html", "r", encoding="utf-8") as html_file:
+        html_text = html_file.read()
+        html_textbox.insert(tk.END, html_text)
+
+
 root = tk.Tk()
 root.title("Traductor HTML")
 root.resizable(False,False)
@@ -61,16 +67,10 @@ root.config(bd="30")
 root.config(relief="groove")
 
 
-def generarTexto():
-    with open("html.html", "r", encoding="utf-8") as html_file:
-        html_text = html_file.read()
-        html_textbox.insert(tk.END, html_text)
-
-
-html_textbox = tk.Text(root, height=30, width=50)
+html_textbox = tk.Text(root, height=30, width=60)
 html_textbox.pack(side=tk.RIGHT)
 
-textbox = tk.Text(root, height=30, width=50)
+textbox = tk.Text(root, height=30, width=60)
 textbox.pack(side=tk.LEFT)
 
 

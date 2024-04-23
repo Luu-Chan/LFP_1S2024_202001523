@@ -1,7 +1,6 @@
 from token_1 import Token
 from error import Error
 import os
-import os
 import subprocess
 
 TOKENS = []
@@ -14,7 +13,8 @@ class Analyzer():
         self.palabrasReservada = ["ID","ER", "CADENAS"]
 
     def isValidSymbol(self, char):
-        return char in [":", "{", "}", ";", ",", "="]
+        return char in [":", "{", "}", ";", ",", "+", "*", "?", "|", ".", "1", "2", 
+                        "3", "4", "5", "6", "7", "8", "9", "0", ]
     
     def state0(self, char, line, column, lexema):
         if self.isValidSymbol(char):
@@ -176,26 +176,3 @@ class Analyzer():
             file.write("</body>\n")
             file.write("</html>\n")
             file.close()
-
-    def generate_dot_code(self):
-        dot_code = "digraph G {\n"
-        
-        # Add nodes for tokens
-        for token in self.tokens:
-            dot_code += f'    {token.name}_{token.line}_{token.column} [label="{token.name}: {token.value}"];\n'
-        
-        # Add edges between tokens
-        for i in range(len(self.tokens) - 1):
-            dot_code += f'    {self.tokens[i].name}_{self.tokens[i].line}_{self.tokens[i].column} -> {self.tokens[i+1].name}_{self.tokens[i+1].line}_{self.tokens[i+1].column};\n'
-        
-        dot_code += "}"
-                    
-        with open("code_graph.dot", "w") as file:
-            file.write(dot_code)
-            file.close()
-        
-        # Add the path to Graphviz bin directory to the PATH environment variable
-        os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin'
-        
-        # Use subprocess to execute the dot command
-        subprocess.run(["dot", "-Tpng", "code_graph.dot", "-o", "Automata.png"])

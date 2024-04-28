@@ -1,4 +1,5 @@
 from analyzer import Analyzer
+from token_1 import Token
 from Parser import Parser
 import tkinter as tk
 from tkinter import filedialog
@@ -7,6 +8,7 @@ import webbrowser
 analyzer = None
 tex = None
 file_path = None
+Lista_t = Token
 
 def load_file():
     global analyzer
@@ -30,6 +32,7 @@ def load_file():
             textbox.delete("1.0", tk.END)
             textbox.insert(tk.END, text)
             tk.messagebox.showinfo("Mensaje", "¡Se ha cargado el archivo de entrada!")
+
 
 def save_file():
     global analyzer

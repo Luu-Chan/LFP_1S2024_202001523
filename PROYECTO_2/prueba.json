@@ -1,6 +1,9 @@
 {
     ID: 1;
-    ER: "abc"+;
+    ER: "abc"+; ''' 
+        PinD20
+        es God
+    '''
     CADENAS: "abcabcabc", "cba", "abc";
 },
 {
@@ -8,10 +11,16 @@
     ER: ("Estoy desesperaaado" | 90.5)? "0"+;
     CADENAS: "Estoy desesperaaado0", "90.5";
 },
+    ''' 
+        Este es un comentario 
+        inutil
+
+    '''
 {
     ID: 3;
     ER: "Facultad: " ( "Ingeniería" | "Arquitectura" );
     CADENAS: "Facultad: Agronomía", "Facultad: Ingenieria", "Facultad: Arquitectura";
 },
+
 
 

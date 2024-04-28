@@ -13,8 +13,8 @@ class Analyzer():
         self.palabrasReservada = ["ID","ER", "CADENAS"]
 
     def isValidSymbol(self, char):
-        return char in [":", "{", "}", ";", ",", "+", "*", "?", "|", ".", "1", "2", 
-                        "3", "4", "5", "6", "7", "8", "9", "0", ]
+        return char in [":", "{", "}", ";", ",", "+", "*", "?", "|", ".","(", ")",
+                        "1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
     
     def state0(self, char, line, column, lexema):
         if self.isValidSymbol(char):
@@ -23,6 +23,8 @@ class Analyzer():
             return 1
         elif char.isalpha():
             return 2
+        elif char == "'":
+            return 3
         else:
             #Omitir espacios, tabulaciones y saltos de línea
             if ord(char) == 10 or ord(char) == 32 or ord(char) == 9:
@@ -31,6 +33,191 @@ class Analyzer():
                 self.errors.append(Error(lexema, char, "Léxico", line, column))
             return 0
 
+    def analyze(self):
+        line = 1
+        column = 1
+        lexema = ""
+
+        state = 0
+        previousState = -1
+        self.tokens.clear()
+        self.errors.clear()
+
+        for char in self.text:
+            if state == 0:
+                state = self.state0(char, line, column, lexema)
+                if state == 0:
+                    #Se reinicia el lexema
+                    lexema = ""
+                    previousState = -1
+                elif state == 10:
+                    lexema += char
+                    previousState = 0
+                    self.tokens.append(Token("Signo", lexema, line, column))
+                    state = 0
+                    lexema = ""
+                else:
+                    lexema += char
+                    previousState = 0
+
+            
+            elif state == 1:
+                if char == '"':
+                    lexema += char
+                    state = 10
+                    previousState = 1
+                elif char != "\n":
+                    lexema += char
+                    state = 1
+                else:#Error
+                    self.errors.append(Error(lexema, char, "Léxico", line, column))
+
+                    #Se reinicia el lexema
+                    lexema = ""
+                    state = 0
+            
+            elif state == 2:
+                if char.isalpha():
+                    lexema += char
+                    state = 2
+                
+                else: #Es un estado de aceptación, se guarda el token
+                    if lexema in self.palabrasReservada:
+                        self.tokens.append(Token("Palabra Reservada", lexema, line, column - len(lexema)))
+                            
+                        #Se reinicia el lexema
+                        lexema = ""
+                        state = 0
+                        #Actúa como si estuviera en el estado 0 de nuevo
+                        state = self.state0(char, line, column, lexema)
+                        if state == 0:
+                        #Se reinicia el lexema
+                            lexema = ""
+                            previousState = -1
+                        else:
+                            lexema += char
+                            previousState = 0
+                    else: #Es un error
+                        self.errors.append(Error(lexema, char, "Léxico", line, column))
+                        #Se reinicia el lexema
+                        lexema = ""
+                        state = 0
+            
+            elif state == 3:
+                if char == "'":
+                    state = 4
+                else:
+                    self.errors.append(Error(lexema, char, "Léxico", line, column))
+                    lexema = ""
+                    state = 0
+            
+            elif state == 4:    
+                if char == "'":
+                    state = 5
+                else:
+                    self.errors.append(Error(lexema, char, "Léxico", line, column))
+                    lexema = ""
+                    state = 10
+            
+            #Se acepta lo que hay dentro del comentario
+            elif state == 5:
+                if char == "'":
+                    state = 6
+                else:
+                    pass
+            
+            elif state == 6:
+                if char == "'":
+                    state = 7
+                else:
+                    pass
+            
+            elif state == 7:
+                if char == "'":
+                    #se termina el comentario
+                    
+                    state = 0
+                    lexema = ""
+                else:
+                    state = 5
+
+            elif state == 10:
+                if previousState == 0:
+                    self.tokens.append(Token("Signo", lexema, line, column - len(lexema)))
+                elif previousState == 1:
+                    self.tokens.append(Token("String", lexema, line, column - len(lexema)))
+                
+                lexema = "" #Se limpia el lexema porque ya fue almacenado
+
+                state = self.state0(char, line, column, lexema)
+                if state == 0:
+                    #Se reinicia el lexema
+                    lexema = ""
+                    previousState = -1
+                else:
+                    lexema += char
+                    previousState = 0
+
+            # Control de líneas y columnas    
+            #Salto de línea
+            if ord(char) == 10:
+                line += 1
+                column = 1
+            #Tabulación
+            elif ord(char) == 9:
+                column += 4
+            #Espacio
+            elif ord(char) == 32:
+                column += 1
+            else:
+                column += 1
+
+    def generarTokens(self):
+        for token in self.tokens:
+            if token.name == "Palabra Reservada" or token.name == "String":
+                TOKENS.append(token)
+
+    def getTokens(self):
+        with open("tokens.html", "w") as file:
+            file.write("<!DOCTYPE html>\n")
+            file.write("<html>\n")
+            file.write("<head>\n")
+            file.write("<title>Tokens</title>\n")
+            file.write("</head>\n")
+            file.write("<body>\n")
+            file.write("<h1><p align='center' style='color: red;'> Tokens y Errores</p></h1>")
+            file.write("<table border='1'>\n")
+            file.write("<tr>\n")
+            file.write("<th>Token</th>\n")
+            file.write("<th>Lexema</th>\n")
+            file.write("<th>Fila</th>\n")
+            file.write("<th>Columna</th>\n")
+            file.write("</tr>\n")
+            for token in self.tokens:
+                file.write("<tr>\n")
+                file.write(f"<td>{token.name}</td>\n")
+                file.write(f"<td>{token.value}</td>\n")
+                file.write(f"<td>{token.line}</td>\n")
+                file.write(f"<td>{token.column}</td>\n")
+                file.write("</tr>\n")
+            file.write("<tr>\n")
+            file.write("<th>Caracter Invalido</th>\n")
+            file.write("<th>Linea</th>\n")
+            file.write("<th>Colunma</th>\n")
+            file.write("</tr>\n")
+            for error in self.errors:
+                if error.errorChar != ';' or error.lexema != '=' or error.lexema != ':':
+                    file.write("<tr>\n")
+                    file.write(f"<td>{error.errorChar}</td>\n")
+                    file.write(f"<td>{error.line}</td>\n")
+                    file.write(f"<td>{error.column}</td>\n")
+                    file.write("</tr>\n")
+            file.write("</body>\n")
+            file.write("</html>\n")
+            file.close()
+
+
+"""
     def analyze(self):
         line = 1
         column = 1
@@ -132,47 +319,4 @@ class Analyzer():
                 column += 1
             else:
                 column += 1
-
-    def generarTokens(self):
-        for token in self.tokens:
-            if token.name == "Palabra Reservada" or token.name == "String":
-                TOKENS.append(token)
-
-    def getTokens(self):
-        with open("tokens.html", "w") as file:
-            file.write("<!DOCTYPE html>\n")
-            file.write("<html>\n")
-            file.write("<head>\n")
-            file.write("<title>Tokens</title>\n")
-            file.write("</head>\n")
-            file.write("<body>\n")
-            file.write("<h1><p align='center' style='color: red;'> Tokens y Errores</p></h1>")
-            file.write("<table border='1'>\n")
-            file.write("<tr>\n")
-            file.write("<th>Token</th>\n")
-            file.write("<th>Lexema</th>\n")
-            file.write("<th>Fila</th>\n")
-            file.write("<th>Columna</th>\n")
-            file.write("</tr>\n")
-            for token in self.tokens:
-                file.write("<tr>\n")
-                file.write(f"<td>{token.name}</td>\n")
-                file.write(f"<td>{token.value}</td>\n")
-                file.write(f"<td>{token.line}</td>\n")
-                file.write(f"<td>{token.column}</td>\n")
-                file.write("</tr>\n")
-            file.write("<tr>\n")
-            file.write("<th>Caracter Invalido</th>\n")
-            file.write("<th>Linea</th>\n")
-            file.write("<th>Colunma</th>\n")
-            file.write("</tr>\n")
-            for error in self.errors:
-                if error.errorChar != ';' or error.lexema != '=' or error.lexema != ':':
-                    file.write("<tr>\n")
-                    file.write(f"<td>{error.errorChar}</td>\n")
-                    file.write(f"<td>{error.line}</td>\n")
-                    file.write(f"<td>{error.column}</td>\n")
-                    file.write("</tr>\n")
-            file.write("</body>\n")
-            file.write("</html>\n")
-            file.close()
+                """

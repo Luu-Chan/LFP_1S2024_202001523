@@ -1,15 +1,12 @@
 {
     ID: 1;
-    ER: "abc"+; ''' 
-        PinD20
-        es God
-    '''
+    ER: "abc"+;
     CADENAS: "abcabcabc", "cba", "abc";
 },
 {
     ID: 2;
-    ER: ("Estoy desesperaaado" | 90.5)? "0"+;
-    CADENAS: "Estoy desesperaaado0", "90.5";
+    ER: ("Estoy desesperaaado" | 23 )? ;
+    CADENAS: "Estoy desesperaaado0", "23";
 },
     ''' 
         Este es un comentario 

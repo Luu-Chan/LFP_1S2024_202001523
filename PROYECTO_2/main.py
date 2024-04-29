@@ -20,6 +20,7 @@ def load_file():
             text = file.read()
             analyzer = Analyzer(text)
             analyzer.analyze()
+            analyzer.generate_html()
             print("====================== Tokens ======================")
             for token in analyzer.tokens:
                 print(token)
@@ -28,6 +29,11 @@ def load_file():
                 print(error)
             parser = Parser(analyzer.tokens)
             parser.parse()
+            print("===================== Errores Sintacticos =====================")
+            for error in parser.errors:
+                print(error)
+            parser.generate_html()
+            
             textbox.config(state=tk.NORMAL)
             textbox.delete("1.0", tk.END)
             textbox.insert(tk.END, text)
@@ -56,9 +62,11 @@ def save():
         print("Se ha guardado el archivo de entrada!")
         tk.messagebox.showinfo("Mensaje", "¡Se ha guardado el archivo de entrada!")
 
-def abrir_archivos():
-    webbrowser.open_new_tab("html.html")
-    webbrowser.open_new_tab("tokens.html")
+def abrir_lexico():
+    webbrowser.open_new_tab("Informe_Lexico.html")
+
+def abrir_sintactico():
+    webbrowser.open_new_tab("Informe_Sintactico.html")
 
 
 def generarTexto():
@@ -83,8 +91,8 @@ menu_principal = tk.Menu(root)
 
 # Crear un menú desplegable
 menu_desplegable = tk.Menu(menu_principal, tearoff=0)
-menu_desplegable.add_command(label="Tokens")
-menu_desplegable.add_command(label="Errores")
+menu_desplegable.add_command(label="Informe Lexico", command=abrir_lexico)
+menu_desplegable.add_command(label="Informe Sintactico", command=abrir_sintactico)
 
 # Añadir el menú desplegable al menú principal
 menu_principal.add_cascade(label="Reportes", menu=menu_desplegable)

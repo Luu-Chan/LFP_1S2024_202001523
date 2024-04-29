@@ -1,8 +1,11 @@
 from token_1 import Token
+from error_s import Error
+
 
 class Parser():
     def __init__(self, tokens) -> None:
         self.tokens = tokens
+        self.errors = []
 
         #Controlar fin de tokens
         self.tokens.append(Token("EOF", "EOF", -1, -1))
@@ -36,6 +39,9 @@ class Parser():
                 self.tokens.pop(0)
             else:
                 print("error, Se esperaba una llave de cierre")
+                fila = self.tokens[0].linea
+                columna = self.tokens[0].columna
+                self.errors.append(Error( self.tokens[0].tipo, "Sintactico",fila, columna))
                 self.recuperar("}")
         else:
             print("Error, se esperaba una llave de apertura")
@@ -63,14 +69,26 @@ class Parser():
                         self.tokens.pop(0)
                     else:
                         print("Error, se esperaba ';'")
+                        fila = self.tokens[0].linea
+                        columna = self.tokens[0].columna
+                        self.errors.append(Error( self.tokens[0].tipo, "Sintactico",fila, columna))
                 else:
                     print("Error, se esperaba un entero")
+                    fila = self.tokens[0].linea
+                    columna = self.tokens[0].columna
+                    self.errors.append(Error( self.tokens[0].tipo, "Sintactico",fila, columna))
                     self.recuperar(";")
             else:
                 print("Error, se esperaba ':'")
+                fila = self.tokens[0].linea
+                columna = self.tokens[0].columna
+                self.errors.append(Error(self.tokens[0].tipo, "Sintactico",fila, columna))
                 self.recuperar(";")
         else:
             print("Error, se esperaba la palabra reservada 'ID'")
+            fila = self.tokens[0].linea
+            columna = self.tokens[0].columna
+            self.errors.append(Error(self.tokens[0].tipo, "Sintactico",fila, columna))
             self.recuperar(";")
 
     #<instruccionER> ::= tk_ER tk_dosPuntos <expresion> <otraExpresion> tk_PyC
@@ -87,10 +105,19 @@ class Parser():
                     self.tokens.pop(0)
                 else:
                     print("Error, se esperaba ';' y se obtuvo" + self.tokens[0].tipo)
+                    fila = self.tokens[0].linea
+                    columna = self.tokens[0].columna
+                    self.errors.append(Error( self.tokens[0].tipo, "Sintactico",fila, columna))
             else:
                 print("Error, se esperaba ':'")
+                fila = self.tokens[0].linea
+                columna = self.tokens[0].columna
+                self.errors.append(Error( self.tokens[0].tipo, "Sintactico",fila, columna))
         else:
             print("Error, se esperaba la palabra reservada 'ER'")
+            fila = self.tokens[0].linea
+            columna = self.tokens[0].columna
+            self.errors.append(Error(self.tokens[0].tipo, "Sintactico",fila, columna))
 
     #<expresion> ::= parA <expresion> parC <operador>
     #              | <elementoER> <operador>
@@ -106,6 +133,9 @@ class Parser():
                 self.operador()
             else:
                 print("Error, se esperaba un parentesis de cierre")
+                fila = self.tokens[0].linea
+                columna = self.tokens[0].columna
+                self.errors.append(Error( self.tokens[0].tipo, "Sintactico",fila, columna))
         else:
             self.elementoER()
             self.operador()
@@ -113,7 +143,7 @@ class Parser():
     #<otraExpresion> ::= <expresion> <otraExpresion>
     #                  | epsilon
     def otraExpresion(self):
-        if self.tokens[0].tipo == "tk_parA" or self.tokens[0].tipo == "tk_cadena" or self.tokens[0].tipo == "tk_entero" or self.tokens[0].tipo == "tk_decimal":
+        if self.tokens[0].tipo == "(" or self.tokens[0].valor == "String" or self.tokens[0].tipo.isdigit() or self.tokens[0].tipo == '.':
             self.expresion()
             self.otraExpresion()
         else:
@@ -123,9 +153,9 @@ class Parser():
     #             | tk_Or <expresion>
     #             | epsilon
     def operador(self):
-        if self.tokens[0].tipo == "tk_Mas" or self.tokens[0].tipo == "tk_Asterisco" or self.tokens[0].tipo == "tk_Interrogacion":
+        if self.tokens[0].tipo == '+' or self.tokens[0].tipo == '*' or self.tokens[0].tipo == '?':
             self.operadorUnario()
-        elif self.tokens[0].tipo == "tk_Or":
+        elif self.tokens[0].tipo == '|':
             self.tokens.pop(0)
             self.expresion()
         else:
@@ -135,51 +165,97 @@ class Parser():
     #                    | tk_Asterisco
     #                    | tk_interrogacion
     def operadorUnario(self):
-        if self.tokens[0].tipo == "tk_Mas" or self.tokens[0].tipo == "tk_Asterisco" or self.tokens[0].tipo == "tk_Interrogacion":
+        if self.tokens[0].tipo == '+' or self.tokens[0].tipo == '*' or self.tokens[0].tipo == '?':
             self.tokens.pop(0)
         else:
             print("Error, se esperaba un operador unario")
+            fila = self.tokens[0].linea
+            columna = self.tokens[0].columna
+            self.errors.append(Error( self.tokens[0].tipo, "Sintactico", fila, columna))
 
     # <elementoER> ::= tk_cadena
     #                | tk_entero
     #                | tk_decimal
     def elementoER(self):
-        if self.tokens[0].tipo == "tk_cadena" or self.tokens[0].tipo == "tk_entero" or self.tokens[0].tipo == "tk_decimal":
+        if self.tokens[0].valor == "String" or self.tokens[0].tipo.isdigit() or self.tokens[0].tipo == '.':
             self.tokens.pop(0)
         else:
             print("Error, se esperaba cadena, entero o decimal")
+            fila = self.tokens[0].linea
+            columna = self.tokens[0].columna
+            self.errors.append(Error( self.tokens[0].tipo, "Sintactico",fila, columna))
 
     #<instruccionCadenas> ::= tk_Cadenas tk_dosPuntos tk_cadena <otraCadena> tk_PyC
     def instruccionCadenas(self):
-        if self.tokens[0].tipo == "tk_Cadenas":
+        if self.tokens[0].tipo == "CADENAS":
             self.tokens.pop(0)
-            if self.tokens[0].tipo == "tk_dosPuntos":
+            if self.tokens[0].tipo == ':':
                 self.tokens.pop(0)
-                if self.tokens[0].tipo == "tk_cadena":
+                if self.tokens[0].valor == "String":
                     self.tokens.pop(0)
 
                     self.otraCadena()
 
-                    if self.tokens[0].tipo == "tk_PyC":
+                    if self.tokens[0].tipo == ';':
                         self.tokens.pop(0)
                     else:
                         print("Error, se esperaba ';' y se obtuvo " + self.tokens[0].tipo)
+                        fila = self.tokens[0].linea
+                        columna = self.tokens[0].columna
+                        self.errors.append(Error( self.tokens[0].tipo, "Sintactico",fila, columna))
                 else:
                     print("Error, se esperaba una cadena")
+                    fila = self.tokens[0].linea
+                    columna = self.tokens[0].columna
+                    self.errors.append(Error("", self.tokens[0].tipo, "Sintactico",fila, columna))
             else:
                 print("Error, se esperaba ':'")
+                fila = self.tokens[0].linea
+                columna = self.tokens[0].columna
+                self.errors.append(Error( self.tokens[0].tipo, "Sintactico",fila, columna))
         else:
             print("Error, se esperaba la palabra reservada 'Cadenas'")
+            fila = self.tokens[0].linea
+            columna = self.tokens[0].columna
+            self.errors.append(Error( self.tokens[0].tipo, "Sintactico",fila, columna))
 
     # <otraCadena> ::= tk_coma tk_cadena <otraCadena>
     #                | epsilon
     def otraCadena(self):
-        if self.tokens[0].tipo == "tk_coma":
+        if self.tokens[0].tipo == ',':
             self.tokens.pop(0)
-            if self.tokens[0].tipo == "tk_cadena":
+            if self.tokens[0].valor == "String":
                 self.tokens.pop(0)
                 self.otraCadena()
             else:
                 print("Error, se esperaba una cadena y se obtuvo" + self.tokens[0].tipo)
+                fila = self.tokens[0].linea
+                columna = self.tokens[0].columna
+                self.errors.append(Error( self.tokens[0].tipo, "Sintactico",fila, columna))
         else:
             pass #Se acepta épsilon
+        
+    def generate_html(self):
+        with open("Informe_Sintactico.html", "w") as file:
+            file.write("<!DOCTYPE html>\n")
+            file.write("<html>\n")
+            file.write("<head>\n")
+            file.write("<title>Errores</title>\n")
+            file.write("</head>\n")
+            file.write("<body>\n")
+            file.write("<h1><p align='center' style='color: red;'> Errores Sintacticos </p></h1>")
+            file.write("<table border='1' align='center' >\n")
+            file.write("<tr>\n")
+            file.write("<th>Caracter</th>\n")
+            file.write("<th>Fila</th>\n")
+            file.write("<th>Columna</th>\n")
+            file.write("</tr>\n")
+            for error in self.errors:
+                file.write("<tr>\n")
+                file.write(f"<td>{error.errorChar}</td>\n")
+                file.write(f"<td>{error.line}</td>\n")
+                file.write(f"<td>{error.column}</td>\n")
+                file.write("</tr>\n")
+            file.write("</body>\n")
+            file.write("</html>\n")
+            file.close()

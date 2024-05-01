@@ -2,7 +2,7 @@ from token_1 import Token
 from error import Error
 import os
 import subprocess
-
+import graphviz
 
 class Analyzer():
     def __init__(self, text):
@@ -12,7 +12,10 @@ class Analyzer():
         self.palabrasReservada = ["ID","ER", "CADENAS"]
 
     def isValidSymbol(self, char):
-        return char in [":", "{", "}", ";", ",", "+", "*", "?", "|", ".","(", ")", "-"]
+        return char in [":", "{", "}", ";", ",", "+", "*", "?", "|","(", ")", "-"]
+    
+    def isnumber(self, char):
+        return char in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."]
     
     def state0(self, char, line, column, lexema):
         if self.isValidSymbol(char):
@@ -21,10 +24,12 @@ class Analyzer():
             return 1
         elif char.isalpha():
             return 2
-        elif char.isdigit():
+        elif self.isnumber(char):
             return 8
         elif char == "'":
             return 3
+        elif char == "#":
+            return 9
         else:
             #Omitir espacios, tabulaciones y saltos de línea
             if ord(char) == 10 or ord(char) == 32 or ord(char) == 9:
@@ -142,15 +147,33 @@ class Analyzer():
                     state = 5
 
             elif state == 8:
-                if char.isdigit() or char == ".": #Se aceptan números enteros y decimales
+                if self.isnumber(char):
                     lexema += char
-                    state = 10
-                    previousState = 2
+                    state = 8
+                elif self.isnumber(char) == False:
+                    self.tokens.append(Token("Numero", lexema, line, column - len(lexema)))
+                    lexema = ""
+                    state = 0
+                    #Actúa como si estuviera en el estado 0 de nuevo
+                    state = self.state0(char, line, column, lexema)
+                    if state == 0:
+                        #Se reinicia el lexema
+                        lexema = ""
+                        previousState = -1
+                    else:
+                        lexema += char
+                        previousState = 0
                 else:
                     self.errors.append(Error(lexema, char, "Léxico", line, column))
                     lexema = ""
                     state = 0
             
+            elif state == 9:
+                if char == "\n":
+                    state = 0
+                    lexema = ""
+                else:
+                    pass
             
             elif state == 10:
                 if previousState == 0:
@@ -185,6 +208,11 @@ class Analyzer():
             else:
                 column += 1
 
+    def get_tokens(self):
+        for token in self.tokens:
+            if token.tipo == "CADENAS" or "ER" or "ID":
+                print(f"Token: {token.valor} Tipo: {token.tipo}")
+    
     def generate_html(self):
         with open("Informe_Lexico.html", "w") as file:
             file.write("<!DOCTYPE html>\n")
@@ -222,3 +250,65 @@ class Analyzer():
             file.write("</body>\n")
             file.write("</html>\n")
             file.close()
+
+    def generate_afd_graph(self):
+        dot = graphviz.Digraph(comment='AFD Diagram')
+            
+        dot.node('0', '0', shape='doublecircle')
+        dot.node('1', '1', shape='circle')
+        dot.node('2', '2', shape='circle')
+        dot.node('3', '3', shape='circle')
+        dot.node('4', '4', shape='circle')
+        dot.node('5', '5', shape='circle')
+        dot.node('6', '6', shape='circle')
+        dot.node('7', '7', shape='circle')
+        dot.node('8', '8', shape='circle')
+        dot.node('9', '9', shape='circle')
+        dot.node('10', '10', shape='circle')
+            
+        dot.edge('0', '10', label=': { } ; , + * ? | . ( ) -')
+        dot.edge('0', '1', label='"')
+        dot.edge('0', '2', label='a-z A-Z')
+        dot.edge('0', '8', label='0-9')
+        dot.edge('0', '3', label="'")
+        dot.edge('0', '9', label='#')
+            
+        dot.edge('1', '10', label='"')
+        dot.edge('1', '1', label='any')
+            
+        dot.edge('2', '2', label='a-z A-Z')
+        dot.edge('2', '10', label='any')
+            
+        dot.edge('3', '4', label="'")
+        dot.edge('3', '10', label='any')
+            
+        dot.edge('4', '5', label="'")
+        dot.edge('4', '10', label='any')
+            
+        dot.edge('5', '6', label="'")
+        dot.edge('5', '5', label='any')
+            
+        dot.edge('6', '7', label="'")
+        dot.edge('6', '5', label='any')
+            
+        dot.edge('7', '10', label="'")
+        dot.edge('7', '5', label='any')
+            
+        dot.edge('8', '8', label='0-9 .')
+        dot.edge('8', '10', label='any')
+            
+        dot.edge('9', '10', label='any')
+            
+        dot.edge('10', '10', label='any')
+            
+        dot.render('afd_graph.gv', view=True)
+                    
+        with open("code_graph.dot", "w") as file:
+            file.write(dot.source)
+            file.close()
+        
+        # Add the path to Graphviz bin directory to the PATH environment variable
+        os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin'
+        
+        # Use subprocess to execute the dot command
+        subprocess.run(["dot", "-Tpng", "code_graph.dot", "-o", "Arbol.png"])

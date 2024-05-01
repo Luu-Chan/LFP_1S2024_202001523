@@ -27,6 +27,15 @@ def load_file():
             print("===================== Errores ======================")
             for error in analyzer.errors:
                 print(error)
+            '''
+            analyzer.get_tokens()
+            tokens_text = ""
+            for token in analyzer.tokens:
+                tokens_text += str(token) + "\n"
+            
+            tokens_textbox = tk.Text(root, height=30, width=60)
+            tokens_textbox.insert(tk.END, tokens_text)
+            tokens_textbox.pack(side=tk.LEFT)'''
             parser = Parser(analyzer.tokens)
             parser.parse()
             print("===================== Errores Sintacticos =====================")

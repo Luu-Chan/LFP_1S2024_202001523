@@ -63,7 +63,7 @@ class Parser():
             self.tokens.pop(0)
             if self.tokens[0].tipo == ":":
                 self.tokens.pop(0)
-                if self.tokens[0].tipo.isdigit():
+                if self.tokens[0].valor == "Numero":
                     self.tokens.pop(0)
                     if self.tokens[0].tipo == ";":
                         self.tokens.pop(0)
@@ -108,16 +108,22 @@ class Parser():
                     fila = self.tokens[0].linea
                     columna = self.tokens[0].columna
                     self.errors.append(Error( self.tokens[0].tipo, "Sintactico",fila, columna))
+                    self.recuperar(";")
+
             else:
                 print("Error, se esperaba ':'")
                 fila = self.tokens[0].linea
                 columna = self.tokens[0].columna
                 self.errors.append(Error( self.tokens[0].tipo, "Sintactico",fila, columna))
+                self.recuperar(";")
+
         else:
             print("Error, se esperaba la palabra reservada 'ER'")
             fila = self.tokens[0].linea
             columna = self.tokens[0].columna
             self.errors.append(Error(self.tokens[0].tipo, "Sintactico",fila, columna))
+            self.recuperar(";")
+
 
     #<expresion> ::= parA <expresion> parC <operador>
     #              | <elementoER> <operador>
@@ -136,6 +142,8 @@ class Parser():
                 fila = self.tokens[0].linea
                 columna = self.tokens[0].columna
                 self.errors.append(Error( self.tokens[0].tipo, "Sintactico",fila, columna))
+                self.recuperar(";")
+
         else:
             self.elementoER()
             self.operador()
@@ -143,7 +151,7 @@ class Parser():
     #<otraExpresion> ::= <expresion> <otraExpresion>
     #                  | epsilon
     def otraExpresion(self):
-        if self.tokens[0].tipo == "(" or self.tokens[0].valor == "String" or self.tokens[0].tipo.isdigit() or self.tokens[0].tipo == '.':
+        if self.tokens[0].tipo == "(" or self.tokens[0].valor == "String" or self.tokens[0].valor == "Numero" or self.tokens[0].tipo == '.':
             self.expresion()
             self.otraExpresion()
         else:
@@ -172,18 +180,22 @@ class Parser():
             fila = self.tokens[0].linea
             columna = self.tokens[0].columna
             self.errors.append(Error( self.tokens[0].tipo, "Sintactico", fila, columna))
+            self.recuperar(";")
+
 
     # <elementoER> ::= tk_cadena
     #                | tk_entero
     #                | tk_decimal
     def elementoER(self):
-        if self.tokens[0].valor == "String" or self.tokens[0].tipo.isdigit() or self.tokens[0].tipo == '.':
+        if self.tokens[0].valor == "String" or self.tokens[0].valor == "Numero" or self.tokens[0].tipo == '.':
             self.tokens.pop(0)
         else:
             print("Error, se esperaba cadena, entero o decimal")
             fila = self.tokens[0].linea
             columna = self.tokens[0].columna
             self.errors.append(Error( self.tokens[0].tipo, "Sintactico",fila, columna))
+            self.recuperar(";")
+
 
     #<instruccionCadenas> ::= tk_Cadenas tk_dosPuntos tk_cadena <otraCadena> tk_PyC
     def instruccionCadenas(self):
@@ -203,21 +215,29 @@ class Parser():
                         fila = self.tokens[0].linea
                         columna = self.tokens[0].columna
                         self.errors.append(Error( self.tokens[0].tipo, "Sintactico",fila, columna))
+                        self.recuperar(";")
+
                 else:
                     print("Error, se esperaba una cadena")
                     fila = self.tokens[0].linea
                     columna = self.tokens[0].columna
                     self.errors.append(Error("", self.tokens[0].tipo, "Sintactico",fila, columna))
+                    self.recuperar(";")
+
             else:
                 print("Error, se esperaba ':'")
                 fila = self.tokens[0].linea
                 columna = self.tokens[0].columna
                 self.errors.append(Error( self.tokens[0].tipo, "Sintactico",fila, columna))
+                self.recuperar(";")
+
         else:
             print("Error, se esperaba la palabra reservada 'Cadenas'")
             fila = self.tokens[0].linea
             columna = self.tokens[0].columna
             self.errors.append(Error( self.tokens[0].tipo, "Sintactico",fila, columna))
+            self.recuperar(";")
+
 
     # <otraCadena> ::= tk_coma tk_cadena <otraCadena>
     #                | epsilon
@@ -232,6 +252,8 @@ class Parser():
                 fila = self.tokens[0].linea
                 columna = self.tokens[0].columna
                 self.errors.append(Error( self.tokens[0].tipo, "Sintactico",fila, columna))
+                self.recuperar(";")
+
         else:
             pass #Se acepta épsilon
         

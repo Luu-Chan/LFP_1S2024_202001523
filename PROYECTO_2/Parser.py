@@ -1,6 +1,8 @@
 from token_1 import Token
 from error_s import Error
-
+import graphviz
+import os
+import subprocess
 
 class Parser():
     def __init__(self, tokens) -> None:
@@ -8,6 +10,8 @@ class Parser():
         self.errors = []
 
         #Controlar fin de tokens
+        if self.tokens[0].tipo.isdigit():
+            self.tokens.pop(0)
         self.tokens.append(Token("EOF", "EOF", -1, -1))
         #End of file = EOF
 
@@ -63,7 +67,7 @@ class Parser():
             self.tokens.pop(0)
             if self.tokens[0].tipo == ":":
                 self.tokens.pop(0)
-                if self.tokens[0].valor == "Numero":
+                if self.tokens[0].tipo.isdigit():
                     self.tokens.pop(0)
                     if self.tokens[0].tipo == ";":
                         self.tokens.pop(0)

@@ -8,4 +8,4 @@ class Error():
         self.column = column
 
     def __str__(self):
-        return f"Error Sintactico({self.lexema}, {self.errorChar}, {self.type}, {self.line}, {self.column})"
+        return f"Error Lexico({self.lexema}, {self.errorChar}, {self.type}, {self.line}, {self.column})"

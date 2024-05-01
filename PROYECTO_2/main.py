@@ -27,20 +27,17 @@ def load_file():
             print("===================== Errores ======================")
             for error in analyzer.errors:
                 print(error)
-            '''
-            analyzer.get_tokens()
-            tokens_text = ""
-            for token in analyzer.tokens:
-                tokens_text += str(token) + "\n"
             
-            tokens_textbox = tk.Text(root, height=30, width=60)
-            tokens_textbox.insert(tk.END, tokens_text)
-            tokens_textbox.pack(side=tk.LEFT)'''
+            text2 = analyzer.get_tokens()
+            tokens_textbox.config(state=tk.NORMAL)
+            tokens_textbox.delete("1.0", tk.END)
+            tokens_textbox.insert(tk.END, text2)
             parser = Parser(analyzer.tokens)
             parser.parse()
             print("===================== Errores Sintacticos =====================")
             for error in parser.errors:
                 print(error)
+
             parser.generate_html()
             
             textbox.config(state=tk.NORMAL)
@@ -78,13 +75,6 @@ def abrir_sintactico():
     webbrowser.open_new_tab("Informe_Sintactico.html")
 
 
-def generarTexto():
-    with open("html.html", "r", encoding="utf-8") as html_file:
-        html_text = html_file.read()
-        html_textbox.insert(tk.END, html_text)
-        
-
-
 root = tk.Tk()
 root.title("PROYECTO 2 LFP")
 root.resizable(False,False)
@@ -93,8 +83,6 @@ root.geometry("1200x720")
 root.config(bg="SlateBlue1")
 root.config(bd="30")
 root.config(relief="groove")
-
-
 
 menu_principal = tk.Menu(root)
 
@@ -109,10 +97,9 @@ menu_principal.add_cascade(label="Reportes", menu=menu_desplegable)
 # Configurar la ventana para usar el menú principal
 root.config(menu=menu_principal)
 
-html_textbox = tk.Text(root, height=30, width=60)
-html_textbox.pack(side=tk.RIGHT)
-
 textbox = tk.Text(root, height=30, width=60)
+tokens_textbox = tk.Text(root, height=30, width=60)
+tokens_textbox.pack(side=tk.RIGHT)
 textbox.pack(side=tk.LEFT)
 
 
@@ -126,7 +113,6 @@ button = tk.Button(root, text="Cargar archivo", command=load_file, font=("Arial"
 button.place(x=10, y=10)  
 button1.place(x=200, y=10)
 button2.place(x=350, y=10)
-textbox.pack()
-html_textbox.pack()
+
 root.mainloop()
 

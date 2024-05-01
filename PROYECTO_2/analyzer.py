@@ -209,11 +209,24 @@ class Analyzer():
                 column += 1
 
     def get_tokens(self):
+        texto = ""
         for token in self.tokens:
-            if token.tipo == "CADENAS" or "ER" or "ID":
-                print(f"Token: {token.valor} Tipo: {token.tipo}")
+            if token.valor == "Palabra Reservada"  or token.valor == "Numero" or token.valor == "String":
+                if token.tipo == "ID" or token.tipo == "ER" or token.tipo == "CADENAS":
+                    texto += "\n" + token.tipo + ": \n"
+                
+                else:    
+                    texto += "\n" + token.tipo + "\n"
+                
+                
+            elif token.tipo == "(" or token.tipo == ")" or token.tipo == "+" or token.tipo == "|" or token.tipo == "?" or token.tipo == "*":
+                texto += token.tipo
+        return texto
+            
     
     def generate_html(self):
+        if self.tokens[0].valor == "Numero":
+            self.tokens.pop(0)
         with open("Informe_Lexico.html", "w") as file:
             file.write("<!DOCTYPE html>\n")
             file.write("<html>\n")
@@ -243,7 +256,7 @@ class Analyzer():
             file.write("</tr>\n")
             for error in self.errors:
                 file.write("<tr>\n")
-                file.write(f"<td>{error.errorChar}</td>\n")
+                file.write(f"<td>{error.lexema}{error.errorChar}</td>\n")
                 file.write(f"<td>{error.line}</td>\n")
                 file.write(f"<td>{error.column}</td>\n")
                 file.write("</tr>\n")

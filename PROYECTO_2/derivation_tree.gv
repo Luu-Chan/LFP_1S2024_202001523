@@ -1,0 +1,30 @@
+// Derivation Tree
+digraph {
+	inicio [label=inicio]
+	elemento [label=elemento]
+	otro_elemento [label=otro_elemento]
+	instruccionID [label=instruccionID]
+	instruccionER [label=instruccionER]
+	instruccionCadenas [label=instruccionCadenas]
+	expresion [label=expresion]
+	otraExpresion [label=otraExpresion]
+	operador [label=operador]
+	operadorUnario [label=operadorUnario]
+	elementoER [label=elementoER]
+	inicio -> elemento
+	inicio -> otro_elemento
+	elemento -> instruccionID
+	elemento -> instruccionER
+	elemento -> instruccionCadenas
+	otro_elemento -> elemento
+	otro_elemento -> otro_elemento
+	instruccionER -> expresion
+	instruccionER -> otraExpresion
+	expresion -> elementoER
+	expresion -> operador
+	otraExpresion -> expresion
+	otraExpresion -> otraExpresion
+	operador -> operadorUnario
+	operador -> expresion
+	elementoER -> tk_cadena
+}

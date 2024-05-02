@@ -285,3 +285,114 @@ class Parser():
             file.write("</body>\n")
             file.write("</html>\n")
             file.close()
+            
+    def generate_derivation_tree(self):
+        dot = graphviz.Digraph(comment='Derivation Tree')
+        dot.node('inicio', '<inicio>')
+        dot.node('elemento', '<elemento>')
+        dot.node('otro_elemento', '<otro_elemento>')
+        dot.node('instruccionID', '<instruccionID>')
+        dot.node('instruccionER', '<instruccionER>')
+        dot.node('expresion', '<expresion>')
+        dot.node('otraExpresion', '<otraExpresion>')
+        dot.node('operador', '<operador>')
+        dot.node('operadorUnario', '<operadorUnario>')
+        dot.node('elementoER', '<elementoER>')
+        dot.node('instruccionCadenas', '<instruccionCadenas>')
+        dot.node('otraCadena', '<otraCadena>')
+
+        dot.edge('inicio', 'elemento')
+        dot.edge('elemento', 'instruccionID')
+        dot.edge('elemento', 'instruccionER')
+        dot.edge('elemento', 'instruccionCadenas')
+        dot.edge('elemento', 'tk_llaveC')
+        dot.edge('elemento', 'tk_llaveA')
+        dot.edge('otro_elemento', 'tk_coma')
+        dot.edge('otro_elemento', 'elemento')
+        dot.edge('otro_elemento', 'otro_elemento')
+        dot.edge('instruccionID', 'tk_id')
+        dot.edge('instruccionID', 'tk_dosPuntos')
+        dot.edge('instruccionID', 'tk_entero')
+        dot.edge('instruccionID', 'tk_PyC')
+        dot.edge('instruccionER', 'tk_ER')
+        dot.edge('instruccionER', 'tk_dosPuntos')
+        dot.edge('instruccionER', 'expresion')
+        dot.edge('instruccionER', 'otraExpresion')
+        dot.edge('instruccionER', 'tk_PyC')
+        dot.edge('expresion', 'parA')
+        dot.edge('expresion', 'expresion')
+        dot.edge('expresion', 'parC')
+        dot.edge('expresion', 'operador')
+        dot.edge('expresion', 'elementoER')
+        dot.edge('otraExpresion', 'expresion')
+        dot.edge('otraExpresion', 'otraExpresion')
+        dot.edge('operador', 'operadorUnario')
+        dot.edge('operador', 'tk_Or')
+        dot.edge('operador', 'expresion')
+        dot.edge('operadorUnario', 'tk_Mas')
+        dot.edge('operadorUnario', 'tk_Asterisco')
+        dot.edge('operadorUnario', 'tk_interrogacion')
+        dot.edge('elementoER', 'tk_cadena')
+        dot.edge('elementoER', 'tk_entero')
+        dot.edge('elementoER', 'tk_decimal')
+        dot.edge('instruccionCadenas', 'tk_Cadenas')
+        dot.edge('instruccionCadenas', 'tk_dosPuntos')
+        dot.edge('instruccionCadenas', 'tk_cadena')
+        dot.edge('instruccionCadenas', 'otraCadena')
+        dot.edge('instruccionCadenas', 'tk_PyC')
+        dot.edge('otraCadena', 'tk_coma')
+        dot.edge('otraCadena', 'tk_cadena')
+        dot.edge('otraCadena', 'otraCadena')
+
+        dot.render('derivation_tree', view=True)
+    
+        with open("code_graph.dot", "w") as file:
+            file.write(dot.source)
+            file.close()
+            os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin'
+        
+            subprocess.run(["dot", "png", "code_g", "-o", "Arbol_D.png"])            
+            
+'''        
+	Terminales: tk_id, tk_entero, tk_PyC, tk_ER, tk_cadena, tk_decimal, tk_parA, tk_parC
+            tk_Mas, tk_asterisco, tk_coma, tk_interrogacion, tk_or
+
+No Terminales: <inicio>
+
+Inicio: <inicio>
+
+Producciones:
+    <inicio> ::= <elemento> <otro_elemento>
+
+    <elemento> ::= tk_llaveA <instruccionID> <instruccionER> <instruccionCadenas> tk_llaveC
+    <otro_elemento> ::= tk_coma <elemento> <otro_elemento>
+                    | epsilon
+
+    <instruccionID> ::= tk_id tk_dosPuntos tk_entero tk_PyC
+
+
+    <instruccionER> ::= tk_ER tk_dosPuntos <expresion> <otraExpresion> tk_PyC
+
+    <expresion> ::= parA <expresion> parC <operador>
+                | <elementoER> <operador>
+
+    <otraExpresion> ::= <expresion> <otraExpresion>
+                    | epsilon
+    
+    <operador> ::= <operadorUnario>
+                | tk_Or <expresion>
+                | epsilon
+
+    <operadorUnario> ::= tk_Mas
+                    | tk_Asterisco
+                    | tk_interrogacion
+
+    <elementoER> ::= tk_cadena
+                | tk_entero
+                | tk_decimal
+
+    <instruccionCadenas> ::= tk_Cadenas tk_dosPuntos tk_cadena <otraCadena> tk_PyC
+
+    <otraCadena> ::= tk_coma tk_Cadena <otraCadena>
+                | epsilon
+'''

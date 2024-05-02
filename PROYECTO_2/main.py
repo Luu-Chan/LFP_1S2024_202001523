@@ -39,6 +39,7 @@ def load_file():
                 print(error)
 
             parser.generate_html()
+            parser.generate_derivation_tree()
             
             textbox.config(state=tk.NORMAL)
             textbox.delete("1.0", tk.END)
@@ -50,9 +51,9 @@ def save_file():
     global analyzer
     global text
     global file_path
+
     if analyzer:
-        if not file_path:
-            filepath = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivo de Salida", "")])
+        filepath = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivo de Salida", "")])
         if filepath:
             with open(filepath, "w", encoding="utf-8") as file:
                 text = textbox.get("1.0", tk.END)
